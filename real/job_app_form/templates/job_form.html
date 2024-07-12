@@ -5,13 +5,13 @@
 <h1>Job Application Form</h1>
 <h2>Welcome {{request.user.username}}</h2>
 <div>
-    
-    <a href="/logout" style="margin-top: 30px;" type = "button" class="btn btn-warning" id="logout">LogOut</a>
+
+    <a href="/logout" style="margin-top: 30px;" type="button" class="btn btn-warning" id="logout">LogOut</a>
 </div>
 
 <form method="post" autocomplete="on" id="Form1">
     {% csrf_token %}
-    
+
     <input type="hidden" name="step" value="{{ step }}">
     <div class="stepIndicator">
         <div class="step btn btn-info">Basic Details</div>
@@ -29,12 +29,14 @@
                 <legend>Basic Details</legend>
                 <tr>
                     <td>
+
                         <label for="firstname"> First name </label>
                         {{form.firstName}}
                         {% if form.errors.firstName %}
                         <p>{{form.errors.firstName}}</p>
                         {% endif %}
                     </td>
+
                     <td>
                         <label for="lastname"> Last name </label>
                         {{form.lastName}}
@@ -85,7 +87,7 @@
                         <p>{{form.errors.phone}}</p>
                         {% endif %}
                     </td>
-                    
+
                 </tr>
                 <tr rowspan="2">
                     <td>
@@ -95,50 +97,58 @@
                         <p>{{form.errors.gender}}</p>
                         {% endif %}
                     </td>
-                    <td>                        
+                    <td>
                         States
-                    
-                        {{form.states}}                   
-
                         <label for="states">States:</label>
-                       
-                        <select id="states" name="states" >
-                            {% if form.states%}                           
-                            <option id="fetchedState" value=""></option>  
-                             {%endif%}                           
-                                             
-                            {% for item in stateDropdownResults%}                            
-                            <option value="{{item.city_state}}">{{ item.city_state  }}</option>
+                        <select id="states" name="states">
+                            {% if form.states%}
+                            <option id="fetchedState" value=""></option>
+                            {%endif%}
+
+                            {% for item in stateDropdownResults%}
+                            <option value="{{item.city_state}}">{{ item.city_state }}</option>
                             {%endfor%}
                         </select>
+
+                        {%if previousState or updateForm %}
+                            {{form.states}}
+                        {%endif%}
+
+
                         <script>
-                            const state =  document.getElementById("id_states").value
-                            console.log("fetched state",state)
-                            document.getElementById("states").value=state
-                            document.getElementById("id_states").style.display="none"                            
-                         </script>
+                            const state = document.getElementById("id_states")
+                            if (state) {
+                                const stateValue = state.value
+                                console.log("fetched state", stateValue)
+                                const selectState = document.getElementById("states")
+                                if (selectState) {
+                                    document.getElementById("states").value = stateValue
+                                }
+                                document.getElementById("id_states").style.display = "none"
+                            }
+                        </script>
                         {% if form.errors.states %}
                         <p>{{form.errors.states}}</p>
                         {% endif %}
-                        
+
                     </td>
                 </tr>
                 <tr>
                     <td>
                         {{form.cities}}
-                        <label for="options">Cities:</label>                       
-                        <select name="cities" id="cities" >
-                            {% if form.cities%}                           
-                            <option id="fetchedCities" value=""></option>  
-                             {%endif%}                             
+                        <label for="options">Cities:</label>
+                        <select name="cities" id="cities">
+                            {% if form.cities%}
+                            <option id="fetchedCities" value=""></option>
+                            {%endif%}
                         </select>
                         <script>
-                            const city =  document.getElementById("id_cities").value
-                            console.log("fetched city",city)
-                            document.getElementById("fetchedCities").value=city 
-                            document.getElementById("fetchedCities").innerHTML=city 
-                            document.getElementById("id_cities").style.display="none"                                
-                         </script>
+                            const city = document.getElementById("id_cities").value
+                            console.log("fetched city", city)
+                            document.getElementById("fetchedCities").value = city
+                            document.getElementById("fetchedCities").innerHTML = city
+                            document.getElementById("id_cities").style.display = "none"                                
+                        </script>
                         {% if form.errors.cities %}
                         <p>{{form.errors.cities}}</p>
                         {% endif %}
@@ -178,16 +188,24 @@
     <div class="tab">
         <fieldset>
             <legend>Educational Details</legend>
-            <input type="button" onclick="add_Rows()" value="+"></button>
-            <input type="button" onclick="subtractRows()" value="-"></button>
+            <!-- <input type="button" onclick="add_Rows()" value="+"></button>
+            <input type="button" onclick="subtractRows()" value="-"></button> -->
             <table id="education_table" class="table">
-                <!--to update -->               
-                {% if updateForm%}     
-                {{form}}
+                <!--to update -->
+                {% if updateForm%}
+            <input type="button" onclick="update_addRows()" value="+"></button>
+            <input type="button" onclick="update_subtractRows()" value="-"></button>
+                <tbody id="update_education_body">
+                   
+                        <tr id="update_dynamic_row">                           
+                                {{form}}                                                  
+                        </tr>
+                           
+                </tbody>
                 {% else %}
-                
+
                 <tbody id="education_body">
-                    <tr id="dynamic_row">                    
+                    <tr id="dynamic_row">
                         <td>
                             <label class="label" for="board_name">Name of Board</label>
                             {{form.name_of_board}}
@@ -199,8 +217,8 @@
                             {{form.percentage}}
 
                         </td>
-                    </tr>              
-                
+                    </tr>
+
                     {% if form.errors.name_of_board %}
                     <p>{{form.errors.name_of_board}}</p>
                     {% endif %}
@@ -210,8 +228,8 @@
                     {% if form.errors.percentage %}
                     <p>{{form.errors.percentage}}</p>
                     {% endif %}
-                    
-                {%endif%}
+
+                    {%endif%}
                 </tbody>
             </table>
         </fieldset>
@@ -272,7 +290,7 @@
             <br>
             {% endfor %}
             {%else%}
-            
+
             {% for form in form %}
             {{ form.non_field_errors }}
             <div>
@@ -296,22 +314,22 @@
                     <option value="gujarati">Gujarati</option>
                 </select>
                 {% endif %}
-                
+
                 {% endif %}
             </div>
             <div>
                 <label for="{{ form.can_read.id_for_label }}">Read</label>
                 {{ form.can_read }}
-               
+
             </div>
             <div>
                 <label for="{{ form.can_write.id_for_label }}">Write</label>
                 {{ form.can_write }}
-                
+
             </div>
             <div>
                 <label for="{{ form.can_speak.id_for_label }}">Speak</label>
-                {{ form.can_speak }}                
+                {{ form.can_speak }}
             </div>
             <hr>
             {% endfor %}
@@ -330,50 +348,50 @@
             {%if updateForm %}
             {{form.as_p}}
             {%else%}
-            
-                {% for form in form %}
-                {{ form.non_field_errors }}
+
+            {% for form in form %}
+            {{ form.non_field_errors }}
+            <div>
                 <div>
                     <div>
-                        <div>
-                           
-                            {% if form.technologies_known %}
-                            {% if forloop.counter == 1 %}
-                            <select name="form-0-technologies_known" id="id_form-0-technologies_known">
-                                <option value="" selected="">Select PHP</option>
-                                <option value="php">PHP</option>
-                            </select>
-                            {% endif %}
-                            {% if forloop.counter == 2 %}
-                            <select name="form-1-technologies_known" id="id_form-1-technologies_known">
-                                <option value="" selected="">Select MYSQL</option>
-                                <option value="mysql">MYSQL</option>
-                            </select>
-                            {% endif %}
-                            {% if forloop.counter == 3 %}
-                            <select name="form-2-technologies_known" id="id_form-2-technologies_known">
-                                <option value="" selected="">Select Laravel</option>
-                                <option value="laravel">LARAVEL</option>
-                            </select>
-                            {% endif %}
-                            {% if forloop.counter == 4 %}
-                            <select name="form-3-technologies_known" id="id_form-3-technologies_known">
-                                <option value="" selected="">Select Oracle</option>
-                                <option value="oracle">ORACLE</option>
-                            </select>
 
-                            {% endif %}
-                            {% endif %}
+                        {% if form.technologies_known %}
+                        {% if forloop.counter == 1 %}
+                        <select name="form-0-technologies_known" id="id_form-0-technologies_known">
+                            <option value="" selected="">Select PHP</option>
+                            <option value="php">PHP</option>
+                        </select>
+                        {% endif %}
+                        {% if forloop.counter == 2 %}
+                        <select name="form-1-technologies_known" id="id_form-1-technologies_known">
+                            <option value="" selected="">Select MYSQL</option>
+                            <option value="mysql">MYSQL</option>
+                        </select>
+                        {% endif %}
+                        {% if forloop.counter == 3 %}
+                        <select name="form-2-technologies_known" id="id_form-2-technologies_known">
+                            <option value="" selected="">Select Laravel</option>
+                            <option value="laravel">LARAVEL</option>
+                        </select>
+                        {% endif %}
+                        {% if forloop.counter == 4 %}
+                        <select name="form-3-technologies_known" id="id_form-3-technologies_known">
+                            <option value="" selected="">Select Oracle</option>
+                            <option value="oracle">ORACLE</option>
+                        </select>
 
-                        </div>
-                        <div>
-                            {{ form.level_of_expertise }}
+                        {% endif %}
+                        {% endif %}
 
-                        </div>
+                    </div>
+                    <div>
+                        {{ form.level_of_expertise }}
+
                     </div>
                 </div>
+            </div>
             {% endfor %}
-           {%endif%}
+            {%endif%}
         </fieldset>
         <button type="submit" name="previous" class="prevBtn">Previous</button>
         <button type="submit" name="next" class="nextBtn">Next</button>
@@ -454,47 +472,42 @@
         <button type="submit" name="previous" class="prevBtn">Previous</button>
         <button type="submit" name="submit" class="nextBtn">Submit</button>
     </div>
-    
+
     {% endif %}
 </form>
 <script>
-   
-
-
-
     value = Number("{{step}}")
-    var currentTab = value-1
+    var currentTab = value - 1
 
 
     showTab(currentTab); // Display the current tab
-    function showTab(n) {       
-       
+    function showTab(n) {
+
         fixStepIndicator(n)
     }
 
 
-    if (currentTab == 0)
-    {
+    if (currentTab == 0) {
         const stateDropdown = document.getElementById("states")
-        const optionDropdown= document.getElementById("cities")
+        const optionDropdown = document.getElementById("cities")
 
-        stateDropdown.addEventListener('change',function(){
-                const selectedstate=this.value;
-                fetch(`/api/cities?state=${selectedstate}`)
+        stateDropdown.addEventListener('change', function () {
+            const selectedstate = this.value;
+            fetch(`/api/cities?state=${selectedstate}`)
                 .then(response => response.json())
                 .then(data => {
-                    optionDropdown.innerHTML=  '<option value=""> --select city--</option>'
+                    optionDropdown.innerHTML = '<option value=""> --select city--</option>'
                     console.log(data)
                     data.forEach(city => {
                         const option = document.createElement('option');
-                        option.value= city.city_name;
-                        option.textContent=city.city_name;
+                        option.value = city.city_name;
+                        option.textContent = city.city_name;
                         optionDropdown.appendChild(option)
                     })
-                }).catch(error=> console.error("Error fetching cities",error))
+                }).catch(error => console.error("Error fetching cities", error))
 
-            })
-        }
+        })
+    }
 
 
 
@@ -578,6 +591,73 @@
 
         // Ensure there's at least one row other than the header
         if (rowCount > 1) {
+            table.deleteRow(rowCount - 1); // Delete the last row
+        }
+    }
+    updateEducationItems = document.getElementById("update_education_body")
+    function update_addRows()
+    {
+        console.log("update")
+         var row = updateEducationItems.insertRow();
+          row.setAttribute("id","update_dynamic_row")
+          var cell1=document.createElement('td')
+          var label1 = document.createElement('label')
+          label1.setAttribute("class","label")
+          label1.setAttribute("for","board_name")
+          label1.textContent='Name of Board'
+          cell1.appendChild(label1)
+          var select = document.createElement('select')
+          select.setAttribute("id","board_name");
+          select.setAttribute("name","board_name")
+
+        var board_names=['GSEB','CBSC',"Bachelor_Degree","Master_Degree","PHD"]
+        board_names.forEach(function(board_name)
+        {
+            var option = document.createElement('option')
+            option.value=board_name;
+            option.textContent=board_name;
+            select.appendChild(option)
+        })
+        cell1.appendChild(select)       
+ 
+         
+          var label2 = document.createElement('label')
+          label2.setAttribute("class","label")
+          label2.setAttribute("for","passing_year")
+          label2.textContent='Passing Year'
+          cell1.appendChild(label2)
+
+          var input2= document.createElement('input')
+            input2.setAttribute("id","passing_year")
+          input2.setAttribute("name","passing_year")
+          input2.setAttribute("class","education")
+          input2.setAttribute("type","text")
+
+          cell1.appendChild(input2)
+
+          var label3 = document.createElement('label')
+          label3.setAttribute("class","label")
+          label3.setAttribute("for","percentage")
+          label3.textContent='Percentage'
+          cell1.appendChild(label3)
+
+          var input3= document.createElement('input')
+        input3.setAttribute("id","percentage")
+          input3.setAttribute("name","percentage")
+          input3.setAttribute("class","education")
+          input3.setAttribute("type","text")
+
+          cell1.appendChild(input3)
+
+          row.appendChild(cell1) 
+    }
+    function update_subtractRows()
+    {
+        var table = document.getElementById("education_table");
+        var rowCount = table.rows.length;
+
+        // Ensure there's at least one row other than the header
+        if (rowCount > 0) {
             table.deleteRow(rowCount - 1); // Delete the last row
         }
     }
