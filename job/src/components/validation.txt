@@ -1,0 +1,129 @@
+link : https://github.com/academind/react-complete-guide-code/tree/03b-cmp-practice
+
+this is the task where the components are rendered 
+
+in style on hover good style for the componentimport React from 'react';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import { MyTextInput, MyCheckbox, MyRadioGroup } from './FormComponent'; // Assuming you have these components
+
+const SignupForm = () => {
+  return (
+    <Formik
+      initialValues={{
+        firstName: '',
+        lastName: '',
+        email: '',
+        hindi: false,
+        read: false,
+        write: false,
+        speak: false,
+        php: false,
+        expertise: '',
+      }}
+      validationSchema={Yup.object({
+        firstName: Yup.string().max(15, 'Must be 15 characters or less').required('Required'),
+        lastName: Yup.string().max(20, 'Must be 20 characters or less').required('Required'),
+        email: Yup.string().email('Invalid email address').required('Required'),
+        hindi: Yup.boolean(),
+        read: Yup.boolean(),
+        write: Yup.boolean(),
+        speak: Yup.boolean(),
+        php: Yup.boolean(),
+        expertise: Yup.string().when('php', {
+          is: true,
+          then: Yup.string().required('Please select your level of expertise.'),
+        }),
+      }).test('hindi-skills', 'If Hindi is selected, at least one skill must be selected, and vice versa', function(values) {
+        const { hindi, read, write, speak } = values;
+        const isHindiSelected = hindi === true;
+        const isSkillSelected = read || write || speak;
+        if ((isHindiSelected && !isSkillSelected) || (!isHindiSelected && isSkillSelected)) {
+          return this.createError({
+            path: 'hindi',
+            message: 'If Hindi is selected, at least one skill must be selected, and vice versa',
+          });
+        }
+        return true;
+      }).test('php-expertise', 'If PHP is selected, a level of expertise must be selected, and vice versa', function(values) {
+        const { php, expertise } = values;
+        if ((php && !expertise) || (!php && expertise)) {
+          return this.createError({
+            path: 'php',
+            message: 'If PHP is selected, a level of expertise must be selected, and vice versa',
+          });
+        }
+        return true;
+      })}
+      onSubmit={(values, { setSubmitting }) => {
+        setTimeout(() => {
+          console.log(JSON.stringify(values, null, 2));
+          setSubmitting(false);
+        }, 400);
+      }}
+    >
+      {({ values, errors, touched }) => (
+        <Form>
+          <MyTextInput
+            label="First Name"
+            name="firstName"
+            type="text"
+            placeholder="Jane"
+          />
+
+          <MyTextInput
+            label="Last Name"
+            name="lastName"
+            type="text"
+            placeholder="Doe"
+          />
+
+          <MyTextInput
+            label="Email Address"
+            name="email"
+            type="email"
+            placeholder="jane@example.com"
+          />
+
+          <MyCheckbox name="hindi">
+            Hindi
+          </MyCheckbox>
+
+          {values.hindi && (
+            <>
+              <MyCheckbox name="read">
+                Read
+              </MyCheckbox>
+              <MyCheckbox name="write">
+                Write
+              </MyCheckbox>
+              <MyCheckbox name="speak">
+                Speak
+              </MyCheckbox>
+            </>
+          )}
+
+          <MyCheckbox name="php">
+            PHP
+          </MyCheckbox>
+
+          {values.php && (
+            <MyRadioGroup name="expertise">
+              <MyRadioGroup name="expertise" value="beginner" label="Beginner" />
+              <MyRadioGroup name="expertise" value="mediator" label="Mediator" />
+              <MyRadioGroup name="expertise" value="expert" label="Expert" />
+            </MyRadioGroup>
+          )}
+
+          {errors.php && touched.php && (
+            <div className="error">{errors.php}</div>
+          )}
+
+          <button type="submit">Submit</button>
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
+export default SignupForm;

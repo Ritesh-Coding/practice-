@@ -1,0 +1,5 @@
+link : https://github.com/academind/react-complete-guide-code/tree/03b-cmp-practice
+
+this is the task where the components are rendered 
+
+in style on hover good style for the component
